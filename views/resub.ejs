@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>stream-notify</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/animate.css">
+        <script src="scripts/jquery-3.2.1.min.js"></script>
+        <script src="scripts/socket.io.js"></script>
+        <script src="scripts/view.js"></script>
+    </head>
+    <body>
+        <div id="subscribe-notify" class="container">
+            <p class="top flash">❤ Resubbed</p>
+            <p class="middle"><%= user %></p>
+            <p class="bottom"><%= months%> months!</p>
+
+            <!--
+            <p class="subscriber-text"><%= user %> <span id="subscription-duration" class="small">- <%= months %>m</span></p>
+            <p class="subscriber-text small uppercase flash">Resubbed!</p>
+            -->
+        </div>
+
+        <script>
+            subscribe();
+        </script>
+    </body>
+</html>
