@@ -17,6 +17,7 @@ $(document).ready(function() {
 function subscribe() {
     var audio = document.createElement('audio');
     audio.setAttribute('src', 'sound/subscribe-notification.mp3');
+    
     var container = $('#subscribe-notify');
     container.fadeIn(0);
     container.addClass('animated bounceInLeft');
