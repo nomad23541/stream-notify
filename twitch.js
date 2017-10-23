@@ -37,6 +37,9 @@ module.exports = function(app, io) {
     client.on('subscription', function(channel, username, method, message, userstate) {
         app.set('username', username)
 
+        // unsure if this is a correct call
+        //app.set('plan', method.plan)
+
         io.emit('subscribe', { for: 'everyone' })
     }) 
 
