@@ -19,19 +19,9 @@ module.exports = function(app, io) {
         channels: ['belkoca']
     }
     
+    // create client and connect to twitch
     var client = new tmi.client(options)
     client.connect()
-
-    /** TESTING FOR NOW */
-    client.on('chat', function (channel, userstate, message, self) {
-        // store the username in app.set
-        app.set('username', userstate.username)
-
-        if(message === '!subscribe')
-            io.emit('subscribe', { for: 'everyone' })
-        else if(message === '!hosted')
-            io.emit('hosted', { for: 'everyone' })
-    })
 
     // on subscription
     client.on('subscription', function(channel, username, method, message, userstate) {
