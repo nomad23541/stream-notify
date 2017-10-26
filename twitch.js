@@ -4,6 +4,7 @@ module.exports = function(app, io) {
     var tmi = require('tmi.js');
     var auth = require('./confidential/auth.js')
     var simpleTimer = require('node-timers/simple')
+    var util = require('./app/util.js')
     
     var options = {
         options: {
@@ -51,6 +52,22 @@ module.exports = function(app, io) {
         io.emit('hosted', { for: 'everyone' })
     })
 
+
+    // check the last followers
+    // TODO: make this actually work sometime...
+    /*
+    client.api({
+        url: 'https://api.twitch.tv/kraken/channels/' + auth.username.toLowerCase() + '/follows?&limit=25&offset=0',
+        method: 'GET',
+        headers: {
+            'Accept': 'application/vnd.twitchtv.v3+json',
+            'Client-ID': auth.clientID
+        }
+    }, function(err, res, body) {
+        console.log(body)
+    })
+    */
+
     /**
      * Check if the channel is currently streaming,
      * if not, checks again every 5 seconds.
@@ -58,7 +75,7 @@ module.exports = function(app, io) {
     function checkIfOnline(callback) {
         var interval = setInterval(function() {
             client.api({
-                url: 'https://api.twitch.tv/kraken/streams/' + 'yoda',
+                url: 'https://api.twitch.tv/kraken/streams/' + auth.username.toLowerCase(),
                 method: 'GET',
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v3+json',
@@ -86,28 +103,17 @@ module.exports = function(app, io) {
 
         simple.on('poll', function() {
             // convert the current time to a readable format
-            var convert = convertMillisToMinutesAndSeconds(simple.time())
+            var convert = util.convertMillisToMinutesAndSeconds(simple.time())
             
             // probably not in best practice to check if the timer
             // has reach 55:00 by string, but oh well I'm 18, I can do what I want
             if(convert === '55:00') {
-                // TODO: redirect to timer view (to be created)
+                io.emit('timer', { for: 'everyone' })
+                // TODO: notify the timer view of time change
             }
         })
     }
 
     // now check if the channel is online
     checkIfOnline(startTimer)
-
-    /**
-     * Converts millseconds to minutes and seconds
-     * returns a string, ex: "4:44"
-     * 
-     * kinda long function name, I know.
-     */
-    function convertMillisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0)
-        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds
-    }
 }
