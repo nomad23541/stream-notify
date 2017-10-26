@@ -23,6 +23,7 @@ module.exports = function(app, io) {
     var client = new tmi.client(options)
     client.connect()
 
+    /** Listen for certain events */
     // on subscription
     client.on('subscription', function(channel, username, method, message, userstate) {
         app.set('username', username)
@@ -47,5 +48,41 @@ module.exports = function(app, io) {
         app.set('viewers', viewers)
 
         io.emit('hosted', { for: 'everyone' })
-    }) 
+    })
+
+    /**
+     * Check if the channel is currently streaming,
+     * if not, checks again every 5 seconds.
+     */
+    function checkIfOnline(callback) {
+        var interval = setInterval(function() {
+            client.api({
+                url: 'https://api.twitch.tv/kraken/streams/' + 'yoda',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.twitchtv.v3+json',
+                    'Client-ID': auth.clientID
+                }
+            }, function(err, res, body) {
+                // check if stream value is null (meaning they are offline)
+                if(body.stream == null) {
+                    console.log('Stream is offline, checking in 5 seconds...')
+                } else {
+                    console.log('Stream is now online!')
+                    clearInterval(interval) // stop interval
+                    startTimer() // call ze callback
+                }
+            })
+        }, 5000)
+    }
+
+    /**
+     * callback function to checkIfOnline()
+     */
+    function startTimer() {
+        // TODO: add timer
+    }
+
+    // now check if the channel is online
+    checkIfOnline(startTimer)
 }
