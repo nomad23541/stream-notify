@@ -86,7 +86,7 @@ module.exports = function(app, io) {
                 if(body.stream == null) {
                     console.log('Stream is offline, checking in 5 seconds...')
                 } else {
-                    console.log('Stream is now online!')
+                    console.log('Stream is online.')
                     clearInterval(interval) // stop interval
                     startTimer() // call ze callback
                 }
