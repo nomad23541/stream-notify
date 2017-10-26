@@ -3,6 +3,7 @@
 module.exports = function(app, io) {
     var tmi = require('tmi.js');
     var auth = require('./confidential/auth.js')
+    var simpleTimer = require('node-timers/simple')
     
     var options = {
         options: {
@@ -80,9 +81,33 @@ module.exports = function(app, io) {
      * callback function to checkIfOnline()
      */
     function startTimer() {
-        // TODO: add timer
+        var simple = simpleTimer({pollInterval: 1000})
+        simple.start()
+
+        simple.on('poll', function() {
+            // convert the current time to a readable format
+            var convert = convertMillisToMinutesAndSeconds(simple.time())
+            
+            // probably not in best practice to check if the timer
+            // has reach 55:00 by string, but oh well I'm 18, I can do what I want
+            if(convert === '55:00') {
+                // TODO: redirect to timer view (to be created)
+            }
+        })
     }
 
     // now check if the channel is online
     checkIfOnline(startTimer)
+
+    /**
+     * Converts millseconds to minutes and seconds
+     * returns a string, ex: "4:44"
+     * 
+     * kinda long function name, I know.
+     */
+    function convertMillisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0)
+        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds
+    }
 }
