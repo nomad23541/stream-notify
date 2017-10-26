@@ -103,7 +103,7 @@ module.exports = function(app, io) {
 
         simple.on('poll', function() {
             // convert the current time to a readable format
-            var convert = util.convertMillisToMinutesAndSeconds(simple.time())
+            var convert = util.convertMillisToTime(simple.time())
             
             // probably not in best practice to check if the timer
             // has reach 55:00 by string, but oh well I'm 18, I can do what I want
