@@ -13,7 +13,6 @@
     "express": "^4.16.2",
     "node-timers": "0.0.2",
     "socket.io": "^2.0.3",
-    "tmi.js": "^1.2.1",
-    "twitch-api": "^0.4.6"
+    "tmi.js": "^1.2.1"
   }
 }
