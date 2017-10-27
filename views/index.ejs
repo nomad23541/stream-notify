@@ -8,5 +8,21 @@
         <script src="scripts/view.js"></script>
     </head>
     <body>
+        <div id="host-notify" class="container">
+            <p class="subscriber-text small"><%= user %> hosted you for <span id="hosted-viewers-amount"><%= viewers %></span> viewers</p>
+        </div>
+
+        <div id="subscribe-notify" class="container">
+            <p class="top flash">❤ Resubbed</p>
+            <p class="middle"><%= user %></p>
+            <p class="bottom"><%= months%> months!</p>
+        </div>
+
+        <div id="subscribe-notify" class="container">
+            <p class="top flash">❤ New Subscriber</p>
+            <p class="middle"><%= user %></p>
+        </div>
+
+        <!-- ADD TIMER NOTIFY -->
     </body>
 </html>
