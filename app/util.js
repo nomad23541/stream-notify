@@ -24,8 +24,8 @@ module.exports = {
      * Converts time to millseconds
      * ex: "4:44" -> 4399528392 (not really but yeah)
      */
-    convertTimeToMillis: function(time) {
-
+    convertTimeToMillis: function(t) {
+        return Number(t.split(':')[0]) * (60000 * 60) + Number(t.split(':')[1]) * 60000 + Number(t.split(':')[2]) * 1000
     },
 
     /**
