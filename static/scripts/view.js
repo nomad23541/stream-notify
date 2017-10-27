@@ -12,6 +12,10 @@ $(document).ready(function() {
     socket.on('hosted', function(msg) {
         window.location.href = 'hosted';
     });
+
+    socket.on('timer', function(data) {
+        console.log('timer has started with data: ' + data.msg);
+    });
 });
 
 function subscribe() {
