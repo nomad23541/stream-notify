@@ -88,7 +88,7 @@ module.exports = function(app, io) {
                 } else {
                     console.log('Stream is online.')
                     clearInterval(interval) // stop interval
-                    startTimer() // call ze callback
+                    startTimer(body.stream.created_at) // call ze callback
                 }
             })
         }, 5000)
@@ -97,20 +97,45 @@ module.exports = function(app, io) {
     /**
      * callback function to checkIfOnline()
      */
-    function startTimer() {
+    function startTimer(created_at) {
         var simple = simpleTimer({pollInterval: 1000})
         simple.start()
 
+        // boolean to track if message has been sent to client(s)
+        var alreadySent = false
+
         simple.on('poll', function() {
-            // convert the current time to a readable format
-            var convert = util.convertMillisToTime(simple.time())
+            // time when stream started
+            var timeStarted = Date.parse(created_at)
+
+            // current time
+            var currentTime = Date.now()
+
+            // how long stream has been on
+            var totalTime = currentTime - timeStarted
             
-            // probably not in best practice to check if the timer
-            // has reach 55:00 by string, but oh well I'm 18, I can do what I want
-            if(convert === '55:00') {
-                io.emit('timer', { for: 'everyone' })
-                // TODO: notify the timer view of time change
+            var date = new Date(totalTime)
+
+            // how many millseconds from next hour
+            var minutesUntilNextHour = 60 - date.getMinutes()
+
+            // next hour in the stream
+            var nextHour = Math.floor(totalTime / 3600000) + 1
+            
+            // tell view to show the timer, but only once each hour
+            if(minutesUntilNextHour == 5 && !alreadySent) {
+                console.log('5 minutes until ' + nextHour)
+                io.emit('timer', { msg: util.convertMillisToTime(totalTime) })
+                alreadySent = true
+            } 
+
+            // reset alreadySent boolean for the next hour
+            if(minutesUntilNextHour != 5 && alreadySent) { 
+                alreadySent = false
             }
+
+            // console.log('Stream Time: ' + util.convertMillisToTime(totalTime) + ' Minutes Until Next Hour: ' + minutesUntilNextHour + ' Next Hour: ' + nextHour)
+            
         })
     }
 
