@@ -8,32 +8,8 @@ var io = require('socket.io')(http);
 app.use(express.static('static'))
 app.set('view engine', 'ejs')
 
-/* Setup Routes */
-
 app.get('/', function(req, res) {
-    res.render('index.ejs', {
-        user: req.app.get('username')
-    })
-})
-
-app.get('/subscribe', function(req, res) {
-    res.render('subscribe.ejs', {
-        user: req.app.get('username')
-    })
-})
-
-app.get('/resub', function(req, res) {
-    res.render('resub.ejs', {
-        user: req.app.get('username'),
-        months: req.app.get('months')
-    })
-})
-
-app.get('/hosted', function(req, res) {
-    res.render('hosted.ejs', {
-        user: req.app.get('username'),
-        viewers: req.app.get('viewers')
-    })
+    res.render('index.ejs')
 })
 
 // load tmi.js connectivity
