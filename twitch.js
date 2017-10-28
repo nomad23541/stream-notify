@@ -26,12 +26,10 @@ module.exports = function(app, io) {
     client.connect()
 
     /** Listen for certain events */
+    
     // on subscription
     client.on('subscription', function(channel, username, method, message, userstate) {
         io.emit('subscribe', { username: username })
-
-        // unsure if this is a correct call
-        //app.set('plan', method.plan)
     }) 
 
     // on resub
@@ -43,22 +41,6 @@ module.exports = function(app, io) {
     client.on('hosted', function(channel, username, viewers, autohost) {
         io.emit('hosted', { username: username, viewers: viwers })
     })
-
-
-    // check the last followers
-    // TODO: make this actually work sometime...
-    /*
-    client.api({
-        url: 'https://api.twitch.tv/kraken/channels/' + auth.username.toLowerCase() + '/follows?&limit=25&offset=0',
-        method: 'GET',
-        headers: {
-            'Accept': 'application/vnd.twitchtv.v3+json',
-            'Client-ID': auth.clientID
-        }
-    }, function(err, res, body) {
-        console.log(body)
-    })
-    */
 
     /**
      * Check if the channel is currently streaming,
@@ -95,39 +77,34 @@ module.exports = function(app, io) {
 
         // boolean to track if message has been sent to client(s)
         var alreadySent = false
+        // the magic number, how many minutes from next hour the timer
+        // should appear
+        var minutes = 5 
 
         simple.on('poll', function() {
             // time when stream started
             var timeStarted = Date.parse(created_at)
-
             // current time
             var currentTime = Date.now()
-
             // how long stream has been on
             var totalTime = currentTime - timeStarted
-            
+            // date for formatting milliseconds from totalTime
             var date = new Date(totalTime)
-
-            // how many millseconds from next hour
+            // how many minutes from next hour
             var minutesUntilNextHour = 60 - date.getMinutes()
-
             // next hour in the stream
             var nextHour = Math.floor(totalTime / 3600000) + 1
             
             // tell view to show the timer, but only once each hour
-            if(minutesUntilNextHour == 5 && !alreadySent) {
-                console.log('5 minutes until ' + nextHour)
+            if(minutesUntilNextHour == minutes && !alreadySent) {
                 io.emit('timer', { time: util.convertMillisToTime(totalTime) })
                 alreadySent = true
             } 
 
             // reset alreadySent boolean for the next hour
-            if(minutesUntilNextHour != 5 && alreadySent) { 
+            if(minutesUntilNextHour != minutes && alreadySent) { 
                 alreadySent = false
-            }
-
-            // console.log('Stream Time: ' + util.convertMillisToTime(totalTime) + ' Minutes Until Next Hour: ' + minutesUntilNextHour + ' Next Hour: ' + nextHour)
-            
+            }     
         })
     }
 
