@@ -39,7 +39,7 @@ module.exports = function(app, io) {
 
     // on hosted
     client.on('hosted', function(channel, username, viewers, autohost) {
-        io.emit('hosted', { username: username, viewers: viwers })
+        io.emit('hosted', { username: username, viewers: viewers })
     })
 
     /**
@@ -58,6 +58,7 @@ module.exports = function(app, io) {
             }, function(err, res, body) {
                 // check if stream value is null (meaning they are offline)
                 if(body.stream == null) {
+                    console.log(body)
                     console.log('Stream is offline, checking in 5 seconds...')
                 } else {
                     console.log('Stream is online.')
@@ -94,17 +95,27 @@ module.exports = function(app, io) {
             var minutesUntilNextHour = 60 - date.getMinutes()
             // next hour in the stream
             var nextHour = Math.floor(totalTime / 3600000) + 1
+
+            /** CURRENTLY TESTING */
+            if(!alreadySent) {
+                io.emit('timer', { time: totalTime })
+                alreadySent = true
+            }
             
             // tell view to show the timer, but only once each hour
-            if(minutesUntilNextHour == minutes && !alreadySent) {
+            /*
+            if(minutesUntilNextHour <= minutes && !alreadySent) {
                 io.emit('timer', { time: util.convertMillisToTime(totalTime) })
                 alreadySent = true
-            } 
-
+            }
+            */
+            
+            /*
             // reset alreadySent boolean for the next hour
             if(minutesUntilNextHour != minutes && alreadySent) { 
                 alreadySent = false
-            }     
+            }
+            */
         })
     }
 
