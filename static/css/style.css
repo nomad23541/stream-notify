@@ -59,6 +59,11 @@ body {
     font-size: 23px;
 }
 
+#time {
+    transition: color 0.3s;
+    color: #2ecc71;
+}
+
 #subscribe {
     width: 500px;
     height: auto;
@@ -84,6 +89,10 @@ body {
     right: 8px;
 
     display: none;
+}
+
+#timer .notif-plain {
+    background-color: black;
 }
 
 .flash {
