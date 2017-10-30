@@ -95,27 +95,18 @@ module.exports = function(app, io) {
             var minutesUntilNextHour = 60 - date.getMinutes()
             // next hour in the stream
             var nextHour = Math.floor(totalTime / 3600000) + 1
-
-            /** CURRENTLY TESTING */
-            if(!alreadySent) {
+            
+            // tell view to show the timer, but only once each hour
+            if(minutesUntilNextHour <= minutes && !alreadySent) {
                 io.emit('timer', { time: totalTime })
                 alreadySent = true
             }
             
-            // tell view to show the timer, but only once each hour
-            /*
-            if(minutesUntilNextHour <= minutes && !alreadySent) {
-                io.emit('timer', { time: util.convertMillisToTime(totalTime) })
-                alreadySent = true
-            }
-            */
-            
-            /*
             // reset alreadySent boolean for the next hour
-            if(minutesUntilNextHour != minutes && alreadySent) { 
+            if(minutesUntilNextHour > minutes && alreadySent) {
+                console.log('alreadySent now false')
                 alreadySent = false
             }
-            */
         })
     }
 
