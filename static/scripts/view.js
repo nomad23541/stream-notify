@@ -13,13 +13,9 @@ $(document).ready(function() {
         hosted(data.username, data.viewers);
     });
 
-    /*
     socket.on('timer', function(data) {
         timer(data.time);
     });
-    */
-
-    timer(3590000);
 
     function subscribe(username) {
         var audio = document.createElement('audio');
@@ -56,6 +52,7 @@ $(document).ready(function() {
         var container = $('#timer');
         var timeLabel = container.find('.notif-plain b#time');
         
+        timeLabel.css({'color': randomItemFromList(colors)});
         timeLabel.text(convertMillisToTime(time));
         container.fadeIn(0);
         container.addClass('animated bounceInRight');
@@ -64,27 +61,27 @@ $(document).ready(function() {
         var nextHour = currentHour + 1;
 
         // continue to count up the timer from here
-        setInterval(function() {
+        var timer = setInterval(function() {
             time += 1000
             currentHour = Math.floor(time / 3600000);
 
             timeLabel.text(convertMillisToTime(time));
-
-            console.log('current time: ' + time); // debugging
 
             // when the next hour has been reached
             if(currentHour == nextHour) {
                 timeLabel.css({'color': 'white'});
                 timeLabel.addClass('flash');
 
-                setTimeout(function() {
-                    timeLabel.animate({'color': '#9b59b6'}, 4000);
-                }, 500);
+                // fade into next color
+                timeLabel.delay(100).animate({'color': randomItemFromList(colors)}, 4000);
 
                 // remove flash after 4 seconds and start slow fade out
                 setTimeout(function() {
                     timeLabel.removeClass('flash');
-                    container.fadeOut(9000, function() { container.removeClass('animated bounceInLeft'); });
+                    container.fadeOut(9000, function() { 
+                        container.removeClass('animated bounceInLeft');
+                        clearInterval(timer); // stop the view's timer
+                    });
                 }, 2000);
 
                 nextHour += 1; // stop this if statement from repeating
@@ -92,6 +89,9 @@ $(document).ready(function() {
         }, 1000);
     }
 
+    /**
+     * Convert time in milliseconds to the form hh:mm:ss
+     */
     function convertMillisToTime(millis) {
         var hours = Math.floor(millis / 3600000);
         var minutes = Math.floor((millis - (hours * 3600000)) / 60000);
@@ -105,5 +105,12 @@ $(document).ready(function() {
             seconds = '0' + seconds;
 
         return hours + ':' + minutes + ':' + seconds;
+    }
+
+    /**
+     * Get random item from an array
+     */
+    function randomItemFromList(list) {
+        return list[Math.floor(Math.random() * list.length)];
     }
 });
