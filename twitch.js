@@ -18,7 +18,7 @@ module.exports = function(app, io) {
             username: auth.username,
             password: auth.password
         },
-        channels: ['belkoca']
+        channels: [auth.channelName]
     }
     
     // create client and connect to twitch
@@ -26,6 +26,24 @@ module.exports = function(app, io) {
     client.connect()
 
     /** Listen for certain events */
+    
+    /*
+    client.on('join', function(channel, username, self) {
+        client.action(auth.channelName, 'Welcome to the stream ' + username + '! Type !about to see avaliable commands.')
+    })
+    */
+
+    client.on('chat', function(channel, userstate, message, self) {
+        if(self) return
+
+        if(message == '!about') {
+            client.action(auth.channelName, 'Avaliable commands are: !credit')
+        }
+
+        if(message == '!credit') {
+            client.action(auth.channelName, 'https://chrisreading.net/')
+        }
+    })
     
     // on subscription
     client.on('subscription', function(channel, username, method, message, userstate) {
@@ -111,5 +129,5 @@ module.exports = function(app, io) {
     }
 
     // now check if the channel is online
-    checkIfOnline(startTimer)
+    //checkIfOnline(startTimer)
 }
