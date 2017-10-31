@@ -33,6 +33,9 @@ module.exports = function(app, io) {
     })
     */
 
+    // chat variables
+    var game
+
     client.on('chat', function(channel, userstate, message, self) {
         if(self) return
 
@@ -42,6 +45,10 @@ module.exports = function(app, io) {
 
         if(message == '!credit') {
             client.action(auth.channelName, 'https://chrisreading.net/')
+        }
+
+        if(message == '!game') {
+            client.action(auth.channelName, game)
         }
     })
     
@@ -68,7 +75,7 @@ module.exports = function(app, io) {
      */
     function checkFollowers() {
         var sent = [] // usernames already sent to the view
-        
+
         setInterval(function() {
             client.api({
                 url: 'https://api.twitch.tv/kraken/channels/' + auth.username.toLowerCase() + '/follows',
@@ -114,11 +121,11 @@ module.exports = function(app, io) {
             }, function(err, res, body) {
                 // check if stream value is null (meaning they are offline)
                 if(body.stream == null) {
-                    console.log(body)
                     console.log('Stream is offline, checking in 5 seconds...')
                 } else {
                     console.log('Stream is online.')
                     clearInterval(interval) // stop interval
+                    game = body.stream.game
                     startTimer(body.stream.created_at) // call ze callback
                 }
             })
@@ -167,5 +174,5 @@ module.exports = function(app, io) {
     }
 
     // now check if the channel is online
-    //checkIfOnline(startTimer)
+    checkIfOnline(startTimer)
 }
