@@ -73,8 +73,8 @@ $(document).ready(function() {
         var container = $('#timer');
         var timeLabel = container.find('.notif-plain b#time');
         
-        timeLabel.css({'color': randomItemFromList(colors)});
-        timeLabel.text(convertMillisToTime(time));
+        timeLabel.css({'color': random(colors)});
+        timeLabel.text(millisToTime(time));
         container.fadeIn(0);
         container.addClass('animated bounceInRight');
 
@@ -86,7 +86,7 @@ $(document).ready(function() {
             time += 1000
             currentHour = Math.floor(time / 3600000);
 
-            timeLabel.text(convertMillisToTime(time));
+            timeLabel.text(millisToTime(time));
 
             // when the next hour has been reached
             if(currentHour == nextHour) {
@@ -94,7 +94,7 @@ $(document).ready(function() {
                 timeLabel.addClass('flash');
 
                 // fade into next color
-                timeLabel.delay(100).animate({'color': randomItemFromList(colors)}, 4000);
+                timeLabel.delay(100).animate({'color': random(colors)}, 4000);
 
                 // remove flash after 4 seconds and start slow fade out
                 setTimeout(function() {
@@ -113,7 +113,7 @@ $(document).ready(function() {
     /**
      * Convert time in milliseconds to the form hh:mm:ss
      */
-    function convertMillisToTime(millis) {
+    function millisToTime(millis) {
         var hours = Math.floor(millis / 3600000);
         var minutes = Math.floor((millis - (hours * 3600000)) / 60000);
         var seconds = parseInt((millis - (hours * 3600000) - (minutes * 60000)) / 1000);
@@ -131,7 +131,7 @@ $(document).ready(function() {
     /**
      * Get random item from an array
      */
-    function randomItemFromList(list) {
+    function random(list) {
         return list[Math.floor(Math.random() * list.length)];
     }
 });

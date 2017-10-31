@@ -1,7 +1,7 @@
 // twitch.js
 
 module.exports = function(app, io) {
-    var tmi = require('tmi.js');
+    var tmi = require('tmi.js')
     var auth = require('./confidential/auth.js')
     var simpleTimer = require('node-timers/simple')
     var util = require('./app/util.js')
@@ -25,22 +25,21 @@ module.exports = function(app, io) {
     var client = new tmi.client(options)
     client.connect()
 
-    /** Listen for certain events */
-    
-    /*
-    client.on('join', function(channel, username, self) {
-        client.action(auth.channelName, 'Welcome to the stream ' + username + '! Type !about to see avaliable commands.')
-    })
-    */
+    /**
+     * TODO:
+     * 
+     * Add !promo, read from text file n such
+     */
 
     // chat variables
     var game
 
+    // on chat
     client.on('chat', function(channel, userstate, message, self) {
         if(self) return
 
         if(message == '!about') {
-            client.action(auth.channelName, 'Avaliable commands are: !credit')
+            client.action(auth.channelName, 'Avaliable commands are: !game, !credit')
         }
 
         if(message == '!credit') {
@@ -89,8 +88,8 @@ module.exports = function(app, io) {
     
                 for(var i = 0; i < body.follows.length; i++) {
                     var username = body.follows[i].user.display_name
-                    var dateFollowed = body.follows[i].created_at
     
+                    // only grab followers if they have followed within the last 10 minutes
                     if(Date.parse(dateFollowed) > currentDate - 600000) {
                         if(!util.contains(username, sent)) {
                             io.emit('followed', { username: username })
@@ -102,8 +101,6 @@ module.exports = function(app, io) {
             })
         }, 30000)
     }
-
-    checkFollowers()
 
     /**
      * Check if the channel is currently streaming,
@@ -125,15 +122,17 @@ module.exports = function(app, io) {
                 } else {
                     console.log('Stream is online.')
                     clearInterval(interval) // stop interval
-                    game = body.stream.game
                     startTimer(body.stream.created_at) // call ze callback
+
+                    // get other stream details
+                    game = body.stream.game
                 }
             })
         }, 5000)
     }
 
     /**
-     * callback function to checkIfOnline()
+     * callback to checkIfOnline()
      */
     function startTimer(created_at) {
         var simple = simpleTimer({pollInterval: 1000})
@@ -156,8 +155,6 @@ module.exports = function(app, io) {
             var date = new Date(totalTime)
             // how many minutes from next hour
             var minutesUntilNextHour = 60 - date.getMinutes()
-            // next hour in the stream
-            var nextHour = Math.floor(totalTime / 3600000) + 1
             
             // tell view to show the timer, but only once each hour
             if(minutesUntilNextHour <= minutes && !alreadySent) {
@@ -167,12 +164,13 @@ module.exports = function(app, io) {
             
             // reset alreadySent boolean for the next hour
             if(minutesUntilNextHour > minutes && alreadySent) {
-                console.log('alreadySent now false')
                 alreadySent = false
             }
         })
     }
 
-    // now check if the channel is online
+    // start checking if stream is online
     checkIfOnline(startTimer)
+    // check for new followers
+    checkFollowers()
 }
