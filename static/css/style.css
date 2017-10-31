@@ -77,6 +77,13 @@ body {
     display: none;
 }
 
+#followed {
+    width: 500px;
+    height: auto;
+
+    display: none;
+}
+
 #hosted {
     right: 8px;
 
