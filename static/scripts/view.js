@@ -1,6 +1,8 @@
 $(document).ready(function() {
     var socket = io();
 
+    var queue = []; // list of usernames to display
+
     socket.on('subscribe', function(data) {
         subscribe(data.username);
     });
@@ -16,6 +18,15 @@ $(document).ready(function() {
     socket.on('timer', function(data) {
         timer(data.time);
     });
+
+    socket.on('followed', function(data) {
+        queue.push(data.username);
+    });
+
+    setInterval(function() {
+        if(queue.length != 0) 
+            followed(queue.pop());
+    }, 20000);
 
     function subscribe(username) {
         var audio = document.createElement('audio');
@@ -44,6 +55,14 @@ $(document).ready(function() {
         container.find('.notif-plain b#viewers').text(viewers);
         container.fadeIn(0);
         container.addClass('animated bounceInRight');
+        container.delay(8000).fadeOut('slow', function() { container.removeClass('animated bounceInLeft'); });
+    }
+
+    function followed(username) {
+        var container = $('#followed');
+        container.find('.notif-main').text(username);
+        container.fadeIn(0);
+        container.addClass('animated bounceInLeft');
         container.delay(8000).fadeOut('slow', function() { container.removeClass('animated bounceInLeft'); });
     }
 
