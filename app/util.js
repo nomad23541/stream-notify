@@ -26,5 +26,12 @@ module.exports = {
      */
     convertTimeToMillis: function(t) {
         return Number(t.split(':')[0]) * (60000 * 60) + Number(t.split(':')[1]) * 60000 + Number(t.split(':')[2]) * 1000
+    },
+
+    /**
+     * If an array contains an item
+     */
+    contains: function(item, array) {
+        return (array.indexOf(item) > -1)
     }
 }
