@@ -1,7 +1,8 @@
 $(document).ready(function() {
     var socket = io();
 
-    var queue = []; // list of usernames to display
+    // followers queue
+    var queue = [];
 
     socket.on('subscribe', function(data) {
         subscribe(data.username);
@@ -23,6 +24,7 @@ $(document).ready(function() {
         queue.push(data.username);
     });
 
+    // show a new follower in the queue every 20 seconds
     setInterval(function() {
         if(queue.length != 0) 
             followed(queue.pop());
