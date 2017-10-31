@@ -61,6 +61,44 @@ module.exports = function(app, io) {
     })
 
     /**
+     * Get a list of all followers and notify the view
+     * if there is a new one
+     * 
+     * Checks every 30 seconds
+     */
+    function checkFollowers() {
+        var sent = [] // usernames already sent to the view
+        
+        setInterval(function() {
+            client.api({
+                url: 'https://api.twitch.tv/kraken/channels/' + auth.username.toLowerCase() + '/follows',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.twitchtv.v3+json',
+                    'Client-ID': auth.clientID
+                }
+            }, function(err, res, body) {
+                var currentDate = Date.now()
+    
+                for(var i = 0; i < body.follows.length; i++) {
+                    var username = body.follows[i].user.display_name
+                    var dateFollowed = body.follows[i].created_at
+    
+                    if(Date.parse(dateFollowed) > currentDate - 600000) {
+                        if(!util.contains(username, sent)) {
+                            io.emit('followed', { username: username })
+                            sent.push(username)
+                        }
+                    }   
+                }
+    
+            })
+        }, 30000)
+    }
+
+    checkFollowers()
+
+    /**
      * Check if the channel is currently streaming,
      * if not, checks again every 5 seconds.
      */
