@@ -5,6 +5,7 @@ module.exports = function(app, io) {
     var auth = require('./confidential/auth.js')
     var simpleTimer = require('node-timers/simple')
     var util = require('./app/util.js')
+    var config = require('./config.json')
     
     var options = {
         options: {
@@ -33,13 +34,19 @@ module.exports = function(app, io) {
 
     // chat variables
     var game
-
+    
     // on chat
     client.on('chat', function(channel, userstate, message, self) {
         if(self) return
 
         if(message == '!about') {
-            client.action(auth.channelName, 'Avaliable commands are: !game, !credit')
+            // return hard-coded commands and find commands in the config.json
+            var commands = '!game !credit'
+            for(var i = 0; i < config.commands.length; i++) {
+                commands += ' ' + config.commands[i].command
+            }
+
+            client.action(auth.channelName, 'Avaliable commands are: ' + commands)
         }
 
         if(message == '!credit') {
@@ -48,6 +55,13 @@ module.exports = function(app, io) {
 
         if(message == '!game') {
             client.action(auth.channelName, game)
+        }
+
+        // get configurable commands from config.json
+        for(var i = 0; i < config.commands.length; i++) {
+            if(message == config.commands[i].command) {
+                client.action(auth.channelName, config.commands[i].message)
+            }
         }
     })
     
@@ -88,6 +102,7 @@ module.exports = function(app, io) {
     
                 for(var i = 0; i < body.follows.length; i++) {
                     var username = body.follows[i].user.display_name
+                    var dateFollowed = body.follows[i].created_at
     
                     // only grab followers if they have followed within the last 10 minutes
                     if(Date.parse(dateFollowed) > currentDate - 600000) {
