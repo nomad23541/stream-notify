@@ -1,0 +1,12 @@
+{
+    "commands": [
+        {
+            "command": "!promo",
+            "message": "Nothing to see here..."
+        },
+        {
+            "command": "!test",
+            "message": "Test message"
+        }
+    ]
+}
