@@ -68,7 +68,7 @@ module.exports = function(app, io) {
     // on subscription
     client.on('subscription', function(channel, username, method, message, userstate) {
         io.emit('subscribe', { username: username })
-    }) 
+    })
 
     // on resub
     client.on('resub', function(channel, username, months, message, userstate, methods) {
